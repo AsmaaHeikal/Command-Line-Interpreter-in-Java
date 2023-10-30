@@ -27,18 +27,40 @@ class Parser {
 
 class Terminal {
     Parser parser;
+    String currentDirectory=System.getProperty("user.dir");
 
     public Terminal() {
         this.parser = new Parser(); // Initialize the parser object
     }
         //Implement each command in a method, for example:
     public void pwd(){
-        File file = new File(".");
-        String path = file.getAbsolutePath();
-        System.out.println(path);
+        System.out.println("Current Directory = " + currentDirectory);
     }
     public void cd(String[] args){
-
+        if(args.length==0){
+            String homeDirectory = System.getProperty("user.home");
+            System.out.println("Home directory: " + homeDirectory);
+            currentDirectory = homeDirectory;
+        }
+        else{
+            if(Objects.equals(args[0], "..")){
+                Path currentPath = Paths.get(currentDirectory);
+                Path parentPath = currentPath.toAbsolutePath().getParent();
+                if (parentPath != null) {
+                    System.out.println("Previous directory: " + parentPath);
+                    currentDirectory = parentPath.toString();
+                } else {
+                    System.out.println("Previous directory not found.");
+                }
+            }
+            else{
+                Path path = Paths.get(args[0]);
+                Path absPath = path.toAbsolutePath();
+                File file = new File(absPath.toString()).getAbsoluteFile();
+                System.out.println("Current directory: " + file);
+                currentDirectory = file.toString();
+            }
+        }
     }
     public void mkdir(String[] args){
         for(int i=0; i<args.length; i++){
