@@ -1,6 +1,8 @@
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Scanner;
 import java.io.File;
+import java.nio.file.Path;
 
 class Parser {
     String commandName; String[] args;
@@ -36,21 +38,72 @@ class Terminal {
         System.out.println(path);
     }
     public void cd(String[] args){
-        
+
     }
     public void mkdir(String[] args){
-
+        for(int i=0; i<args.length; i++){
+            File file = new File(args[i]);
+            if(!file.exists()){
+                file.mkdir();
+            }
+        }
+        System.out.println("Created");
     }
     public void rmdir(String[] args){
-
+        if(Objects.equals(args[0], "*")) {
+            File file = new File(".");
+            String path = file.getAbsolutePath();
+            File[] files = file.listFiles();
+            if (files!= null && files.length > 0) {
+                for (int i = 0; i < files.length; i++) {
+                    if (files[i].isDirectory()) {
+                        File[] itemContent = files[i].listFiles();
+                        if (itemContent != null && itemContent.length == 0) {
+                            files[i].delete();
+                        }
+                    }
+                }
+            }
+            System.out.println("Deleted");
+        }
+        else{
+            Path path = Paths.get(args[0]);
+            Path absPath = path.toAbsolutePath();
+            File file = new File(absPath.toString());
+            System.out.println(file.getAbsolutePath());
+            if(file.exists()) {
+                if (file.delete()) {
+                    System.out.println("Directory deleted");
+                } else {
+                    System.out.println("Directory is not empty");
+                }
+            }
+            else{
+                System.out.println("Directory not found");
+            }
+        }
     }
     //this method will choose the suitable command method to be called
     public void chooseCommandAction(){
+        System.out.print(">");
         Scanner sc = new Scanner(System.in);
         String str = sc.nextLine();
         parser.parse(str);
-        if(Objects.equals(parser.getCommandName(), "pwd")){
-            pwd();
+        while(!str.equals("exit")) {
+            if (Objects.equals(parser.getCommandName(), "pwd")) {
+                pwd();
+            } else if (Objects.equals(parser.getCommandName(), "cd")) {
+                cd(parser.getArgs());
+            } else if (Objects.equals(parser.getCommandName(), "mkdir")) {
+                mkdir(parser.getArgs());
+            } else if (Objects.equals(parser.getCommandName(), "rmdir")) {
+                rmdir(parser.getArgs());
+            } else {
+                System.out.println("Command not found");
+            }
+            System.out.print(">");
+            str = sc.nextLine();
+            parser.parse(str);
         }
     }
     public static void main(String[] args) {
