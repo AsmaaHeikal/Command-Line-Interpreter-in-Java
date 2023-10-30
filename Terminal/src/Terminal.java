@@ -69,17 +69,11 @@ class Terminal {
         else{
             Path path = Paths.get(args[0]);
             Path absPath = path.toAbsolutePath();
-            File file = new File(absPath.toString());
-            System.out.println(file.getAbsolutePath());
-            if(file.exists()) {
-                if (file.delete()) {
-                    System.out.println("Directory deleted");
-                } else {
-                    System.out.println("Directory is not empty");
-                }
-            }
-            else{
-                System.out.println("Directory not found");
+            File file = new File(absPath.toString()).getAbsoluteFile();
+            if (file.delete()) {
+                System.out.println("Directory deleted");
+            } else {
+                System.out.println("Directory is not empty");
             }
         }
     }
