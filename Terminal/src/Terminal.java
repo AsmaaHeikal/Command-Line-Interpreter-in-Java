@@ -109,6 +109,10 @@ class Terminal {
             System.out.println("File not found");
         }
     }
+
+    public String echo(String[] args) {
+        return args[0];
+    }
     //this method will choose the suitable command method to be called
     public void chooseCommandAction(){
         System.out.print(">");
@@ -126,6 +130,8 @@ class Terminal {
                 rmdir(parser.getArgs());
             } else if(Objects.equals(parser.getCommandName(), "rm")){
                 rm(parser.getArgs());
+            } else if(Objects.equals(parser.getCommandName(), "echo")){
+                System.out.println(echo(parser.getArgs()));
             } else {
                 System.out.println("Command not found");
             }
