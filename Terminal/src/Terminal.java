@@ -165,7 +165,7 @@ class Terminal {
     }
     public void cp(String[] args) {
         if(args.length != 2){
-            System.out.println("Invalid number of arguments!The sp command requires two arguments");
+            System.out.println("Invalid number of arguments!The cp command requires two arguments");
         }
         else{
             String source = args[0];
@@ -175,7 +175,7 @@ class Terminal {
 
             try {
                 Files.copy(sourceFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("The contents of the source file has been copied into the destination file successfully!");
+                System.out.println("The content of the source file has been copied into the destination file successfully!");
             }catch (IOException e){
                 System.out.println("An error has occurred while copying the file");
             }
@@ -183,8 +183,53 @@ class Terminal {
 
     }
     public void cp_r(String[] args){
+        if(args.length != 2){
+            System.out.println("Invalid number of arguments!The cp-r command requires two arguments");
+        }
+        else{
+            String source = args[0];
+            String destination = args[1];
+            File sourceDirectory = new File(source);
+            File destinationDirectory = new File(destination);
+            if(!sourceDirectory.exists() || !sourceDirectory.isDirectory()){
+                System.out.println("Source directory does not exist or is not a directory");
+                return ;
+            }
+            if(!destinationDirectory.exists()){
+                destinationDirectory.mkdir();
+            }
+            if(!destinationDirectory.isDirectory()){
+                System.out.println("This is not a directory");
+            }
+            try{
+                copyDirectory(sourceDirectory,destinationDirectory);
+                System.out.println("The content in the first directory had been copied into the destination directory successfully");
+            }catch (IOException e){
+                System.out.println("An error has occurred while copying the directory");
+            }
 
+        }
     }
+    public void copyDirectory(File Source,File Destination) throws IOException{
+        if (Source.isDirectory()) {
+            if (!Destination.exists()) {
+                Destination.mkdir();
+            }
+        }
+        String[] files = Source.list();
+        if (files != null) {
+            for (String file : files) {
+                File srcFile = new File(Source, file);
+                File destFile = new File(Destination, file);
+
+                copyDirectory(srcFile, destFile);
+            }
+        }
+        else {
+            Files.copy(Source.toPath(), Destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
     //this method will choose the suitable command method to be called
     public void chooseCommandAction(){
         System.out.print(">");
