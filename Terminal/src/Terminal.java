@@ -1,11 +1,10 @@
-import java.io.BufferedWriter;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.Scanner;
-import java.io.File;
 import java.nio.file.Path;
-import java.io.FileWriter;
-import java.io.IOException;
 
 class Parser {
     String commandName; String[] args;
@@ -123,7 +122,7 @@ class Terminal {
             myFile.createNewFile();
             FileWriter myWriter = new FileWriter(args[args.length-1]);
             if(Objects.equals(parser.getCommandName(), "pwd")) {
-                myWriter.write(pwd()+" ");
+                myWriter.write(pwd());
             }
             else if(Objects.equals(parser.getCommandName(), "echo")){
                 for(String i :echo(parser.getArgs())){
@@ -164,6 +163,28 @@ class Terminal {
         }
 
     }
+    public void cp(String[] args) {
+        if(args.length != 2){
+            System.out.println("Invalid number of arguments!The sp command requires two arguments");
+        }
+        else{
+            String source = args[0];
+            String destination = args[1];
+            File sourceFile = new File(source);
+            File destinationFile = new File(destination);
+
+            try {
+                Files.copy(sourceFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("The contents of the source file has been copied into the destination file successfully!");
+            }catch (IOException e){
+                System.out.println("An error has occurred while copying the file");
+            }
+        }
+
+    }
+    public void cp_r(String[] args){
+
+    }
     //this method will choose the suitable command method to be called
     public void chooseCommandAction(){
         System.out.print(">");
@@ -171,9 +192,9 @@ class Terminal {
         String str = sc.nextLine();
         parser.parse(str);
         while(!str.equals("exit")) {
-            if(parser.getArgs()[parser.getArgsLength()-2].equals(">")){
+            if( parser.getArgsLength()>2&&parser.getArgs()[parser.getArgsLength()-2].equals(">") ){
                 writeToFile(parser.getArgs());
-            }else if(parser.getArgs()[parser.getArgsLength()-2].equals(">>")){
+            }else if(parser.getArgsLength()>2&&parser.getArgs()[parser.getArgsLength()-2].equals(">>") ){
                 appendToFile(parser.getArgs());
             }else if (Objects.equals(parser.getCommandName(), "pwd")) {
                 System.out.println(pwd());
@@ -190,6 +211,11 @@ class Terminal {
                     System.out.print(i);
                 }
                 System.out.println();
+            } else if(Objects.equals(parser.getCommandName(), "cp")){
+                cp(parser.getArgs());
+
+            }else if(Objects.equals(parser.getCommandName(), "cp-r")){
+                cp_r(parser.getArgs());
             } else {
                 System.out.println("Command not found");
             }
