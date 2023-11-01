@@ -123,7 +123,7 @@ class Terminal {
             myFile.createNewFile();
             FileWriter myWriter = new FileWriter(args[args.length-1]);
             if(Objects.equals(parser.getCommandName(), "pwd")) {
-                myWriter.write(pwd()+" ");
+                myWriter.write(pwd());
             }
             else if(Objects.equals(parser.getCommandName(), "echo")){
                 for(String i :echo(parser.getArgs())){
@@ -171,9 +171,9 @@ class Terminal {
         String str = sc.nextLine();
         parser.parse(str);
         while(!str.equals("exit")) {
-            if(parser.getArgs()[parser.getArgsLength()-2].equals(">")){
+            if( parser.getArgsLength()>2&&parser.getArgs()[parser.getArgsLength()-2].equals(">") ){
                 writeToFile(parser.getArgs());
-            }else if(parser.getArgs()[parser.getArgsLength()-2].equals(">>")){
+            }else if(parser.getArgsLength()>2&&parser.getArgs()[parser.getArgsLength()-2].equals(">>") ){
                 appendToFile(parser.getArgs());
             }else if (Objects.equals(parser.getCommandName(), "pwd")) {
                 System.out.println(pwd());
