@@ -33,8 +33,8 @@ class Terminal {
         this.parser = new Parser(); // Initialize the parser object
     }
         //Implement each command in a method, for example:
-    public void pwd(){
-        System.out.println("Current Directory = " + currentDirectory);
+    public String pwd(){
+        return currentDirectory;
     }
     public void cd(String[] args){
         if(args.length==0){
@@ -121,7 +121,7 @@ class Terminal {
         parser.parse(str);
         while(!str.equals("exit")) {
             if (Objects.equals(parser.getCommandName(), "pwd")) {
-                pwd();
+                System.out.println(pwd());
             } else if (Objects.equals(parser.getCommandName(), "cd")) {
                 cd(parser.getArgs());
             } else if (Objects.equals(parser.getCommandName(), "mkdir")) {
