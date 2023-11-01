@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Scanner;
@@ -37,7 +38,7 @@ class Terminal {
     public Terminal() {
         this.parser = new Parser(); // Initialize the parser object
     }
-        //Implement each command in a method, for example:
+    //Implement each command in a method, for example:
     public String pwd(){
         return currentDirectory;
     }
@@ -113,8 +114,8 @@ class Terminal {
             System.out.println("File not found");
         }
     }
-    public String echo(String[] args) {
-        return args[0];
+    public String[] echo(String[] args) {
+        return args;
     }
     public void writeToFile(String[] args){
         try {
@@ -122,13 +123,42 @@ class Terminal {
             myFile.createNewFile();
             FileWriter myWriter = new FileWriter(args[args.length-1]);
             if(Objects.equals(parser.getCommandName(), "pwd")) {
-                myWriter.write(pwd());
+                myWriter.write(pwd()+" ");
             }
             else if(Objects.equals(parser.getCommandName(), "echo")){
-                myWriter.write(echo(parser.getArgs()));
+                for(String i :echo(parser.getArgs())){
+                    if(Objects.equals(i, ">")) break;
+                    else {
+                        myWriter.write(i + " ");
+                    }
+                }
             }
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+        }
+
+    }
+    public void appendToFile(String[] args){
+        try {
+            File myFile = new File(args[args.length-1]);
+            myFile.createNewFile();
+            BufferedWriter myWriter = new BufferedWriter(new FileWriter(args[args.length-1],true));
+
+            if(Objects.equals(parser.getCommandName(), "pwd")) {
+                myWriter.write(pwd());
+            }
+            else if(Objects.equals(parser.getCommandName(), "echo")){
+                for(String i :echo(parser.getArgs())){
+                    if(Objects.equals(i, ">>")) break;
+                    else {
+                        myWriter.write(i + " ");
+                    }
+                }
+            }
+            myWriter.close();
+            System.out.println("Successfully appended to the file.");
         } catch (IOException e) {
             System.out.println("An error occurred.");
         }
@@ -143,6 +173,8 @@ class Terminal {
         while(!str.equals("exit")) {
             if(parser.getArgs()[parser.getArgsLength()-2].equals(">")){
                 writeToFile(parser.getArgs());
+            }else if(parser.getArgs()[parser.getArgsLength()-2].equals(">>")){
+                appendToFile(parser.getArgs());
             }else if (Objects.equals(parser.getCommandName(), "pwd")) {
                 System.out.println(pwd());
             } else if (Objects.equals(parser.getCommandName(), "cd")) {
@@ -154,7 +186,10 @@ class Terminal {
             } else if(Objects.equals(parser.getCommandName(), "rm")){
                 rm(parser.getArgs());
             } else if(Objects.equals(parser.getCommandName(), "echo")){
-                System.out.println(echo(parser.getArgs()));
+                for(String i : echo(parser.getArgs())){
+                    System.out.print(i);
+                }
+                System.out.println();
             } else {
                 System.out.println("Command not found");
             }
