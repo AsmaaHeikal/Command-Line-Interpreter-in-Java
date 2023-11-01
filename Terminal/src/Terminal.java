@@ -99,6 +99,16 @@ class Terminal {
             }
         }
     }
+
+    public void rm(String[] args){
+        File file = new File(args[0]);
+        if(file.delete()){
+            System.out.println("File deleted");
+        }
+        else{
+            System.out.println("File not found");
+        }
+    }
     //this method will choose the suitable command method to be called
     public void chooseCommandAction(){
         System.out.print(">");
@@ -114,6 +124,8 @@ class Terminal {
                 mkdir(parser.getArgs());
             } else if (Objects.equals(parser.getCommandName(), "rmdir")) {
                 rmdir(parser.getArgs());
+            } else if(Objects.equals(parser.getCommandName(), "rm")){
+                rm(parser.getArgs());
             } else {
                 System.out.println("Command not found");
             }
