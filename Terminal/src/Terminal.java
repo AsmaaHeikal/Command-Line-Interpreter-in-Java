@@ -3,6 +3,8 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.io.File;
 import java.nio.file.Path;
+import java.io.FileWriter;
+import java.io.IOException;
 
 class Parser {
     String commandName; String[] args;
@@ -22,6 +24,9 @@ class Parser {
     }
     public String[] getArgs(){
         return args;
+    }
+    public int getArgsLength(){
+        return args.length;
     }
 }
 
@@ -99,7 +104,6 @@ class Terminal {
             }
         }
     }
-
     public void rm(String[] args){
         File file = new File(args[0]);
         if(file.delete()){
@@ -109,9 +113,26 @@ class Terminal {
             System.out.println("File not found");
         }
     }
-
     public String echo(String[] args) {
         return args[0];
+    }
+    public void writeToFile(String[] args){
+        try {
+            File myFile = new File(args[args.length-1]);
+            myFile.createNewFile();
+            FileWriter myWriter = new FileWriter(args[args.length-1]);
+            if(Objects.equals(parser.getCommandName(), "pwd")) {
+                myWriter.write(pwd());
+            }
+            else if(Objects.equals(parser.getCommandName(), "echo")){
+                myWriter.write(echo(parser.getArgs()));
+            }
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+        }
+
     }
     //this method will choose the suitable command method to be called
     public void chooseCommandAction(){
@@ -120,7 +141,9 @@ class Terminal {
         String str = sc.nextLine();
         parser.parse(str);
         while(!str.equals("exit")) {
-            if (Objects.equals(parser.getCommandName(), "pwd")) {
+            if(parser.getArgs()[parser.getArgsLength()-2].equals(">")){
+                writeToFile(parser.getArgs());
+            }else if (Objects.equals(parser.getCommandName(), "pwd")) {
                 System.out.println(pwd());
             } else if (Objects.equals(parser.getCommandName(), "cd")) {
                 cd(parser.getArgs());
