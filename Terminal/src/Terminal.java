@@ -5,6 +5,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.Scanner;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 class Parser {
     String commandName; String[] args;
@@ -183,12 +184,12 @@ class Terminal {
 
     }
     public void cp_r(String[] args){
-        if(args.length != 2){
+        if(args.length != 3){
             System.out.println("Invalid number of arguments!The cp-r command requires two arguments");
         }
         else{
-            String source = args[0];
-            String destination = args[1];
+            String source = args[1];
+            String destination = args[2];
             File sourceDirectory = new File(source);
             File destinationDirectory = new File(destination);
             if(!sourceDirectory.exists() || !sourceDirectory.isDirectory()){
@@ -229,6 +230,47 @@ class Terminal {
             Files.copy(Source.toPath(), Destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }
+    public void touch(String[] args) {
+        if (args.length != 1) {
+            System.out.println("touch: wrong number of arguments");
+            System.out.println("Usage: touch [filename]");
+            return;
+        }
+
+        File file = new File(args[0]);
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("file already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("error.");
+            e.printStackTrace();
+        }
+    }
+
+    public void ls() {
+        File currentDir = new File(".");
+        String[] files = currentDir.list();
+        if (files != null) {
+            Arrays.sort(files);
+            for (String file : files) {
+                System.out.println(file);
+            }
+        }
+    }
+
+    public void lsR() {
+        File currentDir = new File(".");
+        String[] files = currentDir.list();
+        if (files != null) {
+            Arrays.sort(files, (a, b) -> b.compareTo(a));
+            for (String file : files) {
+                System.out.println(file);
+            }
+        }
+    }
 
     //this method will choose the suitable command method to be called
     public void chooseCommandAction(){
@@ -256,12 +298,19 @@ class Terminal {
                     System.out.print(i);
                 }
                 System.out.println();
-            } else if(Objects.equals(parser.getCommandName(), "cp")){
+            } else if(Objects.equals(parser.getCommandName(), "cp")&& !Objects.equals(parser.getArgs()[0], "-r")){
                 cp(parser.getArgs());
 
-            }else if(Objects.equals(parser.getCommandName(), "cp-r")){
+            }else if(Objects.equals(parser.getCommandName(), "cp") && Objects.equals(parser.getArgs()[0], "-r")){
                 cp_r(parser.getArgs());
-            } else {
+            } else if(Objects.equals(parser.getCommandName(),"touch")){
+                touch(parser.getArgs());
+            } else if(Objects.equals(parser.getCommandName(),"ls")&& parser.getArgsLength()==0){
+                ls();
+            } else if(Objects.equals(parser.getCommandName(),"ls") && Objects.equals(parser.getArgs()[0], "-r")){
+                lsR();
+            }
+            else {
                 System.out.println("Command not found");
             }
             System.out.print(">");
